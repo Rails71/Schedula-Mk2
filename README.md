@@ -1,6 +1,6 @@
 # Schedula Mk2
 
-An excel-python combination to make appointing to officials easier.
+An excel-python combination to make appointing officials to fixtures easier.
 
 For the advanced user there is a python API for interfacing with [schedula](https://schedula.sportstg.com/).
 
