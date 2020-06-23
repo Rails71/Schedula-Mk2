@@ -15,7 +15,7 @@ The good news is if you are using Windows it may just work (depending on your se
 
 1. Open "Schedula Mk2.xlsm". Be sure to enable macros.
 2. Navigate to the controll panel sheet.
-3. (Optional) Enter a schedula username in the approopriate cell.
+3. (Optional) Enter a schedula username in the appropriate cell.
 4. Press "Update Official List", enter password when prompted. Wait for the shell to close.
 5. Enter the start day and the number of days of fixtures to get.
 6. Press "Pull Some". Wait for the shell to close.
