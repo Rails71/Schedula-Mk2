@@ -93,17 +93,17 @@ def pullN(session, filename, season, startDay, N, useProxy, proxyDict):
 # Checkes for changes in schedula and does not appoint clashes
 def push(session, filename, pushFile, peopleFile, useProxy, proxyDict):
     print('Command: push')
-    print(' filename: ' + filename)
-    print(' pushFile: ' + pushFile)
-    print(' peopleFile: ' + peopleFile)
 
     # Load filename - ['FixtureID','OrgID','OrgName','SeasonID','SeasonName','WeekID','WeekName','Competition','Date', 'day','Time','Home','Away','Ground','Referee','AR1','AR2','Mentor','Assessor','4th Official','Other','Status']
+    print(' filename: ' + filename)
     storedAppointments = schedula.readCSV(filename)
 
     # Load pushFile - ['FixtureID','R','AR1','AR2','M','A','4']
+    print(' pushFile: ' + pushFile)
     pushData = schedula.readAppointmentList(pushFile)
 
     # Load people file
+    print(' peopleFile: ' + peopleFile)
     people = schedula.readCSV(peopleFile)
 
     # For each fixtureID in pushFile: check againsed schedula for changes, if change found does it clash with appointment? if yes don't apoint.
@@ -149,12 +149,13 @@ def push(session, filename, pushFile, peopleFile, useProxy, proxyDict):
 
     # remove clashes
     for c in clashes:
+        print(' Cannot appoint fixture:' + str(c))
         pushData.remove(c)
 
     # display changes that are about to occur
-    print("The following changes are about to be applied, this action cannot be undone:")
-    for p in pushData:
-        print(p) # TODO: make this look nicer
+    print("Changes are about to be applied, this action cannot be undone")
+    # for p in pushData:
+    #    print(p) # prints all changes
 
     # HOLD POINT - require user acknowledgment to continue
     hold = True
@@ -177,9 +178,6 @@ def push(session, filename, pushFile, peopleFile, useProxy, proxyDict):
     updated = schedula.pushAppointments(session,pushData,people,useProxy=useProxy, proxyDict=proxyDict)
 
     # TODO: update filename
-    # update updated fixtures
-    # flag out of date fixtures
-    
 
 
 # function to write fixtures and appointments to a csv

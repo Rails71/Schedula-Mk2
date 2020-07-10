@@ -1145,7 +1145,7 @@ def getRefInfo(session, fixtureID, pannelName='Referee (built-in)', proxy=False,
 # refId              - person id of the referees to be appointed
 # appointmentTypeId  - id of the appointment type, i.e. R,AR1,AR2,M,A,4,N (referee, ar1, ar2, mentor, assessor, 4th official, Null(remove them))
 #
-# throws an error on failure
+# Aborts on failure.
 def appointFixture(session, fixtureID, appointData, proxy=False, proxyDict={}):
     try:
         print('\nModify Fixture <' + fixtureID + '>...')
@@ -1165,6 +1165,11 @@ def appointFixture(session, fixtureID, appointData, proxy=False, proxyDict={}):
             else:
                 foundRef = False
                 for ref in referees:
+                    # check for unknown appointment id, i.e. Referee already appointed
+                    if ref[1] == '':
+                        print(" Fialed to appoint " + ref[0] + " to " + fixtureID)
+                        foundRef = True
+                        break
                     if ref[2] == pid[0]:
                         appointIds.append([ref[0], ref[1], ref[2], pid[1], ''])
                         foundRef = True
