@@ -1165,15 +1165,16 @@ def appointFixture(session, fixtureID, appointData, proxy=False, proxyDict={}):
             else:
                 foundRef = False
                 for ref in referees:
-                    # check for unknown appointment id, i.e. Referee already appointed
-                    if ref[1] == '':
-                        print(" Fialed to appoint " + ref[0] + " to " + fixtureID)
-                        foundRef = True
-                        break
                     if ref[2] == pid[0]:
-                        appointIds.append([ref[0], ref[1], ref[2], pid[1], ''])
-                        foundRef = True
-                        break
+                        # check for unknown appointment id, i.e. Referee already appointed
+                        if ref[1] == '':
+                            print(" Fialed to appoint " + ref[0] + " to " + fixtureID)
+                            foundRef = True
+                            break
+                        else:
+                            appointIds.append([ref[0], ref[1], ref[2], pid[1], ''])
+                            foundRef = True
+                            break
                 if not foundRef:
                     raise Exception('Unknown Referee:' + str(pid))
 
