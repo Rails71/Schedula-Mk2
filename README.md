@@ -68,4 +68,4 @@ See the list of [contributors](https://github.com/Rails71/schedulaMk2/graphs/con
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/Rails71/schedulaMk2/blob/master/LICENCE.txt).
+This project is licensed under the [MIT License](https://github.com/Rails71/Schedula-Mk2/blob/master/LICENCE.txt).
