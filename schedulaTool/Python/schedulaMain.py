@@ -217,7 +217,7 @@ def writeToCsv(fixtures, appointments, filename):
                 status[roleName] = a[5] # accept status
             else:
                 statusFlag = 'Appointment Error, multiple appointments to ' + roleName
-                print('Warning: multiple appointments to ' + roleName + '. FixtureID: ' + fixID + '. See: https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=' + fixID)
+                print('Warning: multiple appointments to ' + roleName + '. FixtureID: ' + fixID + '. See: https://schedula.mygameday.app/index.php?action=admin/appointments/appoint_match&fixtureid=' + fixID)
 
         # convert date to somthing nicer (before: Sat Jun 27) (after: 27-Jun-2020)
         dateStrs = fix[7].split(' ')

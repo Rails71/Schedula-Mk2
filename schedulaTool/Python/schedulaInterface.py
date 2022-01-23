@@ -35,6 +35,8 @@ from datetime import timedelta
 import time
 import traceback
 
+SCHEDULA_BASE_URL = "https://schedula.mygameday.app"
+
 # TODO: parallelise requests to speedup
 
 ################################################################################
@@ -66,7 +68,7 @@ def getPage(session, url, proxy=False, proxyDict={}):
 # returns the output of session.post(url)
 def post(session, url, data, proxy=False, proxyDict={}):
     # TODO: check session is still loged in
-    headers = { "content-type" : "application/x-www-form-urlencoded", "Accept-Language" : "en-US,en;q=0.5", "Origin" : "https://schedula.sportstg.com"}
+    headers = { "content-type" : "application/x-www-form-urlencoded", "Accept-Language" : "en-US,en;q=0.5", "Origin" : SCHEDULA_BASE_URL}
     if proxy:
         r = session.post(url, data=data, headers=headers, proxies=proxyDict, verify=False)
     else:
@@ -92,7 +94,7 @@ def getSession(user, pswd, proxy=False, proxyDict={}):
     session = requests.Session()
 
     # url of schedula login page
-    url = 'https://schedula.sportstg.com'
+    url = SCHEDULA_BASE_URL
 
     # get login page
     r = getPage(session, url, proxy, proxyDict)
@@ -109,7 +111,7 @@ def getSession(user, pswd, proxy=False, proxyDict={}):
     text = text[1].split('"')
     text = text[1]
 
-    if text == 'https://schedula.sportstg.com/index.php?action=dashboard':
+    if text == (SCHEDULA_BASE_URL + '/index.php?action=dashboard'):
         print('Login Success')
     else:
         print('Login Fail')
@@ -126,7 +128,7 @@ def getSession(user, pswd, proxy=False, proxyDict={}):
 # Returns a list of organisation and id pairs
 def getOrganisations(session, proxy=False, proxyDict={}):
     # get an admin page
-    url = 'https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_by_week'
+    url = SCHEDULA_BASE_URL + '/index.php?action=admin/appointments/appoint_by_week'
     r3 = getPage(session, url, proxy, proxyDict)
 
     # the interesting bit is below. This gives the organisations, their id and which function to use to get the seasons
@@ -180,7 +182,7 @@ def getOrganisations(session, proxy=False, proxyDict={}):
 # Returns a list of season, id pairs
 def getSeasons(session, orgId, proxy=False, proxyDict={}):
     # HTTP data
-    url = 'https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_by_week'
+    url = SCHEDULA_BASE_URL + '/index.php?action=admin/appointments/appoint_by_week'
     data = 'xjxfun=GetSeasons&xjxargs[]=S' + orgId + '&xjxargs[]=SAppointByWeek'
     r4 = post(session, url, data, proxy, proxyDict)
 
@@ -220,7 +222,7 @@ def getSeasons(session, orgId, proxy=False, proxyDict={}):
 # Returns a list of week, id pairs
 def getSeasonWeeks(session, seasonID, proxy=False, proxyDict={}):
     # HTTP data
-    url = 'https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_by_week'
+    url = SCHEDULA_BASE_URL + '/index.php?action=admin/appointments/appoint_by_week'
     data = 'xjxfun=GetSeasonWeeks&xjxargs[]=S' + seasonID + '&xjxargs[]=SAppointByWeek'
     r5 = post(session, url, data, proxy, proxyDict)
 
@@ -266,7 +268,7 @@ def getSeasonWeeks(session, seasonID, proxy=False, proxyDict={}):
 def getFixturesForWeek(session, seasonID, weekID, proxy=False, proxyDict={}):
     # HTTP data
     data = 'xjxfun=ShowFixturesForWeek&xjxargs[]=N' + seasonID + '&xjxargs[]=S' + weekID
-    url = 'https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_by_week'
+    url = SCHEDULA_BASE_URL + '/index.php?action=admin/appointments/appoint_by_week'
     r6 = post(session, url, data, proxy, proxyDict)
 
     # response is a big table with each competition + some other random stuff
@@ -912,7 +914,7 @@ def getOfficials(session, year='2020', pannel='', personsFile='People.csv', useP
 # Returns a list of appointment details (including confirmation status)
 # appointment format: ['fixtureid','officialName','appointID','selectedRole','selectedRoleID','acceptStatus']
 def lookupFixture(session, fixtureID):
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     r = session.get(url)
 
     text = r.text
@@ -994,7 +996,7 @@ def lookupFixture(session, fixtureID):
 # returns {'pannels':[id, string], 'appointTypes':[id, string], 'referees':[name, appointID, personID], 'appointments':{'fixtureID:':fixtureID, 'Name':Name, 'appointID':appointID, 'role':role, 'roleID':roleID, 'status':status} }
 def getRefInfo(session, fixtureID, pannelName='Referee (built-in)', proxy=False, proxyDict={}):
     # get fixture page
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     r = getPage(session,url,proxy,proxyDict)
     text1 = r.text
     
@@ -1412,49 +1414,49 @@ def roleStringToLetter(role):
 ## Schedula xjx api functions ##
 ################################
 def changePanel(session, panelId, fixtureID, onlyAvaliable='false', proxy=False, proxyDict={}):
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     data = 'xjxfun=ChangePanel&xjxr=' + getXjxr() + '&xjxargs[]=N' + panelId + '&xjxargs[]=N' + fixtureID + '&xjxargs[]=B'+ onlyAvaliable
     print('    changePanel: ' + data)
     return post(session, url, data, proxy, proxyDict)
 
 def changeAppointmentType(session, appointmentId, fixtureID, proxy=False, proxyDict={}):
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     data = 'xjxfun=ChangeAppointmentType&xjxr=' + getXjxr() + '&xjxargs[]=S' + appointmentId + '&xjxargs[]=N' + fixtureID
     print('    changeAppointmentType: ' + data)
     return post(session, url, data, proxy, proxyDict)
 
 def AppointUmpire(session, refAppointId, appointmentType, fixtureID, arg = 'false', proxy=False, proxyDict={}):
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     data = 'xjxfun=AppointUmpire&xjxr=' + getXjxr() + '&xjxargs[]=N' + refAppointId + '&xjxargs[]=S' + appointmentType + '&xjxargs[]=N' + fixtureID + '&xjxargs[]=B' + arg
     print('    AppointUmpire: ' + data)
     return post(session, url, data, proxy, proxyDict)
 
 def DisplayOnWeb(session, refAppointid, appointmentType, fixtureID, flag, proxy=False, proxyDict={}): #flag=0 to display on website
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     data = 'xjxfun=DisplayOnWeb&xjxr=' + getXjxr() + '&xjxargs[]=N' + refAppointid + '&xjxargs[]=N' + appointmentType + '&xjxargs[]=N' + fixtureID + '&xjxargs[]=N' + flag
     print('    DisplayOnWeb: ' + data)
     return post(session, url, data, proxy, proxyDict)
 
 def UnappointUmpire(session, refappointid, appointType, fixtureID, proxy=False, proxyDict={}):
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     data = 'xjxfun=UnappointUmpire&xjxr=' + getXjxr() + '&xjxargs[]=N' + refappointid + '&xjxargs[]=N' + appointType + '&xjxargs[]=N' + fixtureID
     print('    UnappointUmpire: ' + data)
     return post(session, url, data, proxy, proxyDict)
 
 def SaveAppointments(session, fixtureID, proxy=False, proxyDict={}):
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     data = 'xjxfun=SaveAppointments&xjxr=' + getXjxr() + '&xjxargs[]=N' + fixtureID
     print('    SaveAppointments: ' + data)
     return post(session, url, data, proxy, proxyDict)
 
 def DiscardChanges(session, fixtureID, arg1='false', arg2='false', proxy=False, proxyDict={}):
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     data = 'xjxfun=DiscardChanges&xjxr=' + getXjxr() + '&xjxargs[]=N' + fixtureID + '&xjxargs[]=B' + arg1 + '&xjxargs[]=B' + arg2
     print('    DiscardChanges: ' + data)
     return post(session, url, data, proxy, proxyDict)
 
 def JustClose(session, fixtureID, proxy=False, proxyDict={}):
-    url = "https://schedula.sportstg.com/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
+    url = SCHEDULA_BASE_URL + "/index.php?action=admin/appointments/appoint_match&fixtureid=" + fixtureID + "&skeleton=true"
     data = 'xjxfun=JustClose&xjxr=' + getXjxr() + '&xjxargs[]=N' + fixtureID
     print('    JustClose: ' + data)
     r = post(session, url, data, proxy, proxyDict)
